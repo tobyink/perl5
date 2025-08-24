@@ -283,6 +283,8 @@
 #   undef case_9_SBOX32
 #   undef CC_UNDERSCORE_
 #   undef isFOO_or_UNDERSCORE_
+#   undef pTHX_10
+#   undef pTHX_11
 #   undef USE_STDIO
 #   if !defined(PERL_EXT)
 #     undef invlist_intersection_
