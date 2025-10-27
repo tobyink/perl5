@@ -4740,19 +4740,21 @@ S_intuit_more(pTHX_ char *s, char *e,
                  * changed since the code was first added */
                 char tmpbuf[ C_ARRAY_LENGTH(PL_tokenbuf) * 4 ];
 
-                if (! scan_ident(s, tmpbuf, C_ARRAY_END(tmpbuf), CHECK_ONLY))
+                /* (Reserve tmpbuf[0] for future commits) */
+                if (! scan_ident(s, tmpbuf + 1, C_ARRAY_END(tmpbuf),
+                                 CHECK_ONLY))
                 {
                     /* An illegal identifier means this can't be a subscript;
                      * it's an error or it could be a charclass */
                     return false;
                 }
 
-                len = strlen(tmpbuf);
+                len = strlen(tmpbuf + 1);
 
                 /* khw: This only looks at global variables; lexicals came
                  * later, and this hasn't been updated.  Ouch!! */
                 if (   len > 1
-                    && gv_fetchpvn_flags(tmpbuf,
+                    && gv_fetchpvn_flags(tmpbuf + 1,
                                          len,
                                          UTF ? SVf_UTF8 : 0,
                                          SVt_PV))
