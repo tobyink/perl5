@@ -4751,6 +4751,13 @@ S_intuit_more(pTHX_ char *s, char *e,
             Size_t len; /* (C++ forbids joining these 2 lines) */
             len = strlen(tmpbuf + 1);
 
+            /* If it doesn't look like an identifier at all, scan_ident will
+             * set tmpbuf[1] to NUL.  This is either an error or a character
+             * class. */
+            if (len == 0) {
+                return false;
+            }
+
             /* khw: This only looks at global variables; lexicals came
              * later, and this hasn't been updated.  Ouch!! */
             if (   len > 1
@@ -4772,10 +4779,9 @@ S_intuit_more(pTHX_ char *s, char *e,
                      * element, like $subscripts{$which}.  We should advance
                      * past the braces and key */
             }
-            else /* len == 1 */
-               if (   s[0] == '$'
-                   && s[1]
-                   && memCHRs("[#!%*<>()-=", tmpbuf[1]))
+            else if (   len == 1
+                     && s[0] == '$'
+                     && memCHRs("[#!%*<>()-=", tmpbuf[1]))
             {
                 /* Here we have what could be a punctuation variable.  If the
                  * next character after it is a closing bracket, it makes it
@@ -4786,7 +4792,7 @@ S_intuit_more(pTHX_ char *s, char *e,
                 else
                     weight -= 1;
             }
-            else { /* len == 1 */
+            else {
                 /* Not a multi-char identifier already known in the program;
                  * is somewhat likely to be a subscript.
                  *
