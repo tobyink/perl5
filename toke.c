@@ -4814,15 +4814,15 @@ S_intuit_more(pTHX_ char *s, char *e,
                         weight -= 100;
                 }
             }
-            else if (   len > 1
-                         /* khw: This only looks at global variables; lexicals
-                          * came later, and this hasn't been updated.  Ouch!!
-                          * */
-                      && gv_fetchpvn_flags(tmpbuf + 1,
-                                           len,
-                                           UTF ? SVf_UTF8 : 0,
-                                           SVt_PV))
-            {
+            else if (len > 1) {
+                /* See if there is a known identifier of the given kind.  For
+                 * arrays, this might also be a reference to one of its
+                 * elements.   XXX Maybe the latter should require a following
+                 * '[' */
+                if (   is_existing_identifier(tmpbuf, len, s[0], UTF)
+                    || (   s[0] == '$'
+                        && is_existing_identifier(tmpbuf, len, '@', UTF)))
+                {
                     weight -= 100;
 
                     /* khw: Below we keep track of repeated characters;
@@ -4835,6 +4835,16 @@ S_intuit_more(pTHX_ char *s, char *e,
                      * So, we should advance past it.  Suppose it is a hash
                      * element, like $subscripts{$which}.  We should advance
                      * past the braces and key */
+                }
+                else {  /* Isn't a known identifier */
+                    /* Under strict, this means an error. */
+                    if (under_strict_vars) {
+                        return false;
+                    }
+
+                    /* Otherwise still somewhat likely to be a subscript */
+                    weight -= 10;
+                }
             }
             else if (   len == 1
                      && s[0] == '$'
