@@ -4758,13 +4758,70 @@ S_intuit_more(pTHX_ char *s, char *e,
                 return false;
             }
 
-            /* khw: This only looks at global variables; lexicals came
-             * later, and this hasn't been updated.  Ouch!! */
-            if (   len > 1
-                && gv_fetchpvn_flags(tmpbuf + 1,
-                                     len,
-                                     UTF ? SVf_UTF8 : 0,
-                                     SVt_PV))
+            /* If there is extra stuff in the source, like braces, it means
+             * this is almost definitely intended to be an identifier */
+            bool decorated;
+            decorated = (Size_t) (s_after_ident - s) > len;
+
+            if (isDIGIT_A(tmpbuf[1])) {
+
+                /* &41 and &4b are illegal subroutine names so is an error or
+                 * a charclass */
+                if (s[0] == '&') {
+                    return false;
+                }
+
+                /* Here, matches [$@]\d+.  If the next input character is a
+                 * \w, we would have something like $456x, which is an illegal
+                 * identifer, so is an error or a charclass */
+                if ( ! decorated
+                    && isWORDCHAR_lazy_if_safe(s_after_ident,
+                                               PL_bufend, UTF))
+                {
+                    return false;
+                }
+
+                /* We don't get here if this potential identifier starts with
+                 * leading zeros, due to the logic in scan_ident. */
+                assert(len == 1 || tmpbuf[0] != '0');
+
+                /* The chances are vanishingly small that someone is going to
+                 * want [$0] to expand to the program's name in a character
+                 * class.  But, what would the program's name be doing as part
+                 * of a subscript either?  The only likely scenario is that
+                 * this is meant to be a charclass matching either '$' or '0'.
+                 * */
+                if (tmpbuf[1] == '0') {
+                    return false;
+                }
+
+                /* Here it is either something like $1 which is supposed to
+                 * match either dollar or 1, or it is supposed to expand to
+                 * what is in $1 left over from a capturing group from the
+                 * previous pattern match.  In the latter case, it could be
+                 * either a part of wanting to calculate a subscript, or to
+                 * use as the contents of as part of the character class.
+                 * Larger (undecorated) numbers are much less likely to have
+                 * had capturing groups, so they lean more towards a
+                 * charclass.  100 is what this function has traditionally
+                 * used for len>1; khw thinks there is no bias one way or the
+                 * other for length 1 ones.  But has chosen 100 for decorated
+                 * identifiers
+                 *
+                 * XXX long enough identifiers could probably return false
+                 * immediately here, rather than using weights. */
+                if (decorated || len > 1) {
+                        weight -= 100;
+                }
+            }
+            else if (   len > 1
+                         /* khw: This only looks at global variables; lexicals
+                          * came later, and this hasn't been updated.  Ouch!!
+                          * */
+                      && gv_fetchpvn_flags(tmpbuf + 1,
+                                           len,
+                                           UTF ? SVf_UTF8 : 0,
+                                           SVt_PV))
             {
                     weight -= 100;
 
@@ -4816,7 +4873,6 @@ S_intuit_more(pTHX_ char *s, char *e,
            *      \R must be subscript
            *      \? must be subscript for things like \d, but not \a.
            */
-
 
           case '\\':
             if (s[1] == '\0') {
