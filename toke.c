@@ -4733,48 +4733,48 @@ S_intuit_more(pTHX_ char *s, char *e,
              *
              */
 
-                /* khw: where did the magic number 4 come from?.  This buffer
-                 * was 4 times as large as tokenbuf in 1997, and had not
-                 * changed since the code was first added */
-                char tmpbuf[ C_ARRAY_LENGTH(PL_tokenbuf) * 4 ];
+            /* khw: where did the magic number 4 come from?.  This buffer
+             * was 4 times as large as tokenbuf in 1997, and had not
+             * changed since the code was first added */
+            char tmpbuf[ C_ARRAY_LENGTH(PL_tokenbuf) * 4 ];
 
-                /* (Reserve tmpbuf[0] for future commits) */
-                if (! scan_ident(s, tmpbuf + 1, C_ARRAY_END(tmpbuf),
-                                 CHECK_ONLY))
-                {
-                    /* An illegal identifier means this can't be a subscript;
-                     * it's an error or it could be a charclass */
-                    return false;
-                }
+            /* (Reserve tmpbuf[0] for future commits) */
+            if (! scan_ident(s, tmpbuf + 1, C_ARRAY_END(tmpbuf),
+                             CHECK_ONLY))
+            {
+                /* An illegal identifier means this can't be a subscript;
+                 * it's an error or it could be a charclass */
+                return false;
+            }
 
-                Size_t len; /* (C++ forbids joining these 2 lines) */
-                len = strlen(tmpbuf + 1);
+            Size_t len; /* (C++ forbids joining these 2 lines) */
+            len = strlen(tmpbuf + 1);
 
-                /* khw: This only looks at global variables; lexicals came
-                 * later, and this hasn't been updated.  Ouch!! */
-                if (   len > 1
-                    && gv_fetchpvn_flags(tmpbuf + 1,
-                                         len,
-                                         UTF ? SVf_UTF8 : 0,
-                                         SVt_PV))
-                {
+            /* khw: This only looks at global variables; lexicals came
+             * later, and this hasn't been updated.  Ouch!! */
+            if (   len > 1
+                && gv_fetchpvn_flags(tmpbuf + 1,
+                                     len,
+                                     UTF ? SVf_UTF8 : 0,
+                                     SVt_PV))
+            {
                     weight -= 100;
 
-                    /* khw: Below we keep track of repeated characters;  People
-                     * rarely say qr/[aba]/, as the second a is pointless.
-                     * (Some do it though as a mnemonic that is meaningful to
-                     * them.)  But generally, repeated characters make things
-                     * more likely to be a charclass.  But here, this an
-                     * identifier so likely a subscript.  Its spelling should
-                     * be irrelevant to the repeated characters test.  So, we
-                     * should advance past it.  Suppose it is a hash element,
-                     * like $subscripts{$which}.  We should advance past the
-                     * braces and key */
-                }
-                else if (len == 1) {
-                 if (   s[0] == '$'
-                     && s[1]
-                     && memCHRs("[#!%*<>()-=", tmpbuf[1]))
+                    /* khw: Below we keep track of repeated characters;
+                     * People rarely say qr/[aba]/, as the second a is
+                     * pointless.  (Some do it though as a mnemonic that is
+                     * meaningful to them.) But generally, repeated characters
+                     * make things more likely to be a charclass.  But here,
+                     * this an identifier so likely a subscript.  Its spelling
+                     * should be irrelevant to the repeated characters test.
+                     * So, we should advance past it.  Suppose it is a hash
+                     * element, like $subscripts{$which}.  We should advance
+                     * past the braces and key */
+            }
+            else /* len == 1 */
+               if (   s[0] == '$'
+                   && s[1]
+                   && memCHRs("[#!%*<>()-=", tmpbuf[1]))
             {
                 /* Here we have what could be a punctuation variable.  If the
                  * next character after it is a closing bracket, it makes it
@@ -4785,20 +4785,19 @@ S_intuit_more(pTHX_ char *s, char *e,
                 else
                     weight -= 1;
             }
-                else {
-                    /* Not a multi-char identifier already known in the
-                     * program; is somewhat likely to be a subscript.
-                     *
-                     * khw: Our test suite contains several constructs like
-                     * [$A-Z].  Excluding length 1 identifiers in the
-                     * conditional above means such are much less likely to be
-                     * mistaken for subscripts.  I would argue that if the next
-                     * character is a '-' followed by an alpha, that would make
-                     * it much more likely to be a charclass.  It would only
-                     * make sense to be an expression if that alpha string is a
-                     * bareword with meaning; something like [$A-ord] */
-                    weight -= 10;
-                }
+            else { /* len == 1 */
+                /* Not a multi-char identifier already known in the program;
+                 * is somewhat likely to be a subscript.
+                 *
+                 * khw: Our test suite contains several constructs like
+                 * [$A-Z].  Excluding length 1 identifiers in the conditional
+                 * above means such are much less likely to be mistaken for
+                 * subscripts.  I would argue that if the next character is a
+                 * '-' followed by an alpha, that would make it much more
+                 * likely to be a charclass.  It would only make sense to be
+                 * an expression if that alpha string is a bareword with
+                 * meaning; something like [$A-ord] */
+                weight -= 10;
             }
             break;
 
