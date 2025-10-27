@@ -4732,7 +4732,6 @@ S_intuit_more(pTHX_ char *s, char *e,
              * looks for.
              *
              */
-            if (isWORDCHAR_lazy_if_safe(s+1, PL_bufend, UTF)) {
 
                 /* khw: where did the magic number 4 come from?.  This buffer
                  * was 4 times as large as tokenbuf in 1997, and had not
@@ -4772,6 +4771,20 @@ S_intuit_more(pTHX_ char *s, char *e,
                      * like $subscripts{$which}.  We should advance past the
                      * braces and key */
                 }
+                else if (len == 1) {
+                 if (   s[0] == '$'
+                     && s[1]
+                     && memCHRs("[#!%*<>()-=", tmpbuf[1]))
+            {
+                /* Here we have what could be a punctuation variable.  If the
+                 * next character after it is a closing bracket, it makes it
+                 * quite likely to be that, and hence a subscript.  If it is
+                 * something else, more mildly a subscript */
+                if (/*{*/ memCHRs("])} =", tmpbuf[2]))
+                    weight -= 10;
+                else
+                    weight -= 1;
+            }
                 else {
                     /* Not a multi-char identifier already known in the
                      * program; is somewhat likely to be a subscript.
@@ -4786,19 +4799,6 @@ S_intuit_more(pTHX_ char *s, char *e,
                      * bareword with meaning; something like [$A-ord] */
                     weight -= 10;
                 }
-            }
-            else if (   s[0] == '$'
-                     && s[1]
-                     && memCHRs("[#!%*<>()-=", s[1]))
-            {
-                /* Here we have what could be a punctuation variable.  If the
-                 * next character after it is a closing bracket, it makes it
-                 * quite likely to be that, and hence a subscript.  If it is
-                 * something else, more mildly a subscript */
-                if (/*{*/ memCHRs("])} =", s[2]))
-                    weight -= 10;
-                else
-                    weight -= 1;
             }
             break;
 
