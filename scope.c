@@ -291,8 +291,8 @@ magic will be processed on the new scalar.  If unset, 'set' magic will be
 skipped.  The latter typically means that assignment will soon follow (I<e.g.>,
 S<C<'local $x = $y'>>), and that will handle the magic.
 
-=for apidoc Amnh ||SAVEf_KEEPOLDELEM
-=for apidoc Amnh ||SAVEf_SETMAGIC
+=for apidoc Cmnh ||SAVEf_KEEPOLDELEM
+=for apidoc Cmnh ||SAVEf_SETMAGIC
 
 =cut
 */
