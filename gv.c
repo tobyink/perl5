@@ -3651,7 +3651,11 @@ Perl_try_amagic_bin(pTHX_ int method, int flags)
 
 
 /*
-=for apidoc amagic_deref_call
+=for apidoc      amagic_deref_call
+=for apidoc_flag AMGf_noleft
+=for apidoc_flag AMGf_noright
+=for apidoc_flag AMGf_unary
+=for apidoc_flag AMGf_assign
 
 Perform C<method> overloading dereferencing on C<ref>, returning the
 dereferenced result.  C<method> must be one of the dereference operations given
