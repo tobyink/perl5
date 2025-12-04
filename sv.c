@@ -2460,12 +2460,11 @@ Perl_sv_2iv_flags(pTHX_ SV *const sv, const I32 flags)
 
 /*
 =for apidoc sv_2uv_flags
+=for apidoc_flag SV_GMAGIC
 
 Return the unsigned integer value of an SV, doing any necessary string
 conversion.  If C<flags> has the C<SV_GMAGIC> bit set, does an C<mg_get()> first.
 Normally used via the C<SvUV(sv)> and C<SvUVx(sv)> macros.
-
-=for apidoc Amnh||SV_GMAGIC
 
 =cut
 */
@@ -2928,6 +2927,7 @@ S_infnan_2pv(NV nv, char* buffer, size_t maxlen, char plus) {
 /*
 =for apidoc      sv_2pv
 =for apidoc_item sv_2pv_flags
+=for apidoc_flag SV_GMAGIC
 
 These implement the various forms of the L<perlapi/C<SvPV>> macros.
 The macros are the preferred interface.
@@ -2938,8 +2938,6 @@ necessary), and set C<*lp> to its length in bytes.
 The forms differ in that plain C<sv_2pvbyte> always processes 'get' magic; and
 C<sv_2pvbyte_flags> processes 'get' magic if and only if C<flags> contains
 C<SV_GMAGIC>.
-
-=for apidoc Amnh||SV_GMAGIC
 
 =cut
 */
@@ -3293,6 +3291,7 @@ Perl_sv_copypv_flags(pTHX_ SV *const dsv, SV *const ssv, const I32 flags)
 /*
 =for apidoc      sv_2pvbyte
 =for apidoc_item sv_2pvbyte_flags
+=for apidoc_flag SV_GMAGIC
 
 These implement the various forms of the L<perlapi/C<SvPVbyte>> macros.
 The macros are the preferred interface.
@@ -3305,8 +3304,6 @@ they croak.
 The forms differ in that plain C<sv_2pvbyte> always processes 'get' magic; and
 C<sv_2pvbyte_flags> processes 'get' magic if and only if C<flags> contains
 C<SV_GMAGIC>.
-
-=for apidoc Amnh||SV_GMAGIC
 
 =cut
 */
@@ -3437,6 +3434,8 @@ Perl_sv_2bool_flags(pTHX_ SV *sv, I32 flags)
 =for apidoc_item sv_utf8_upgrade_flags
 =for apidoc_item sv_utf8_upgrade_flags_grow
 =for apidoc_item sv_utf8_upgrade_nomg
+=for apidoc_flag SV_GMAGIC
+=for apidoc_flag SV_FORCE_UTF8_UPGRADE
 
 These convert the PV of an SV to its UTF-8-encoded form.
 The SV is forced to string form if it is not already.
@@ -3461,9 +3460,6 @@ These are not a general purpose byte encoding to Unicode interface: use the
 Encode extension for that.
 
 The C<SV_FORCE_UTF8_UPGRADE> flag is now ignored.
-
-=for apidoc Amnh||SV_GMAGIC|
-=for apidoc Amnh||SV_FORCE_UTF8_UPGRADE|
 
 =cut
 
@@ -3780,6 +3776,7 @@ Perl_sv_utf8_decode(pTHX_ SV *const sv)
 =for apidoc_item sv_setsv_flags
 =for apidoc_item sv_setsv_mg
 =for apidoc_item sv_setsv_nomg
+=for apidoc_flag SV_NOSTEAL
 
 These copy the contents of the source SV C<ssv> into the destination SV C<dsv>.
 C<ssv> may be destroyed if it is mortal, so don't use these functions if
@@ -3805,8 +3802,6 @@ C<L</SvSetMagicSV_nosteal>>.
 
 C<sv_setsv_flags> is the primary function for copying scalars, and most other
 copy-ish functions and macros use it underneath.
-
-=for apidoc Amnh||SV_NOSTEAL
 
 =cut
 */
@@ -5667,6 +5662,8 @@ Perl_sv_sethek(pTHX_ SV *const sv, const HEK *const hek)
 =for apidoc      sv_usepvn
 =for apidoc_item sv_usepvn_flags
 =for apidoc_item sv_usepvn_mg
+=for apidoc_flag SV_SMAGIC
+=for apidoc_flag SV_HAS_TRAILING_NUL
 
 These tell an SV to use C<ptr> for its string value.  Normally SVs have
 their string stored inside the SV, but these tell the SV to use an
@@ -5695,9 +5692,6 @@ magic is skipped.
 
 C<sv_usepvn_mg> is merely C<sv_usepvn_flags> with C<flags> set to C<SV_SMAGIC>,
 so 'set' magic is performed.
-
-=for apidoc Amnh||SV_SMAGIC
-=for apidoc Amnh||SV_HAS_TRAILING_NUL
 
 =cut
 */
@@ -5850,6 +5844,7 @@ S_sv_uncow(pTHX_ SV * const sv, const U32 flags)
 
 =for apidoc      sv_force_normal
 =for apidoc_item sv_force_normal_flags
+=for apidoc_flag SV_COW_DROP_PV
 
 Undo various types of fakery on an SV, where fakery means
 "more than" a string:
@@ -5889,8 +5884,6 @@ other value.)
 Other than what was mentioned above, the two forms behave identically.
 This is because C<sv_force_normal> merely calls C<sv_force_normal_flags> with
 C<flags> set to 0.
-
-=for apidoc Amnh||SV_COW_DROP_PV
 
 =cut
 */
@@ -6091,6 +6084,8 @@ Perl_sv_chop(pTHX_ SV *const sv, const char *const ptr)
 =for apidoc_item sv_catpvs_flags
 =for apidoc_item sv_catpvs_mg
 =for apidoc_item sv_catpvs_nomg
+=for apidoc_flag SV_CATUTF8
+=for apidoc_flag SV_CATBYTES
 
 These each concatenate a string onto the end of the string which is in C<dsv>.
 They differ in how the catenated string is specified and in the handling of
@@ -6124,9 +6119,6 @@ if C<true> indicates that C<sstr> is encoded in UTF-8; otherwise not.
 
 For all other forms, the string appended is assumed to be valid UTF-8
 if and only if the C<dsv> has the UTF-8 status set.
-
-=for apidoc Amnh||SV_CATUTF8
-=for apidoc Amnh||SV_CATBYTES
 
 =cut
 */
@@ -8145,6 +8137,7 @@ S_sv_pos_u2b_cached(pTHX_ SV *const sv, MAGIC **const mgp, const U8 *const start
 
 =for apidoc      sv_pos_u2b
 =for apidoc_item sv_pos_u2b_flags
+=for apidoc_flag PERL_MAGIC_utf8
 
 These each find out how many bytes are occupied by the first so-many
 UTF-8-encoded characters in the PV of C<sv>.  The character count is passed by
@@ -8173,8 +8166,6 @@ C<sv_pos_u2b> automatically causes C<SV_CONST_RETURN> to be passed to
 C<SvPV_flags>.
 
 Both functions use and update C<PERL_MAGIC_utf8>.
-
-=for apidoc Amnh||PERL_MAGIC_utf8
 
 =cut
 */
@@ -8431,6 +8422,7 @@ S_sv_pos_b2u_midway(pTHX_ const U8 *const s, const U8 *const target,
 
 =for apidoc      sv_pos_b2u
 =for apidoc_item sv_pos_b2u_flags
+=for apidoc_flag PERL_MAGIC_utf8
 
 These each count the number of UTF-8 encoded characters in the PV of C<sv>.
 The entire PV is not necessarily looked at, just the first so-many bytes.
@@ -8459,8 +8451,6 @@ C<sv_pos_b2u> automatically causes C<SV_CONST_RETURN> to be passed to
 C<SvPV_flags>.
 
 Both functions use and update C<PERL_MAGIC_utf8>.
-
-=for apidoc Amnh||PERL_MAGIC_utf8
 
 =cut
 */
@@ -8600,6 +8590,7 @@ S_assert_uft8_cache_coherent(pTHX_ const char *const func, STRLEN from_cache,
 =for apidoc_item sv_streq
 =for apidoc_item sv_eq_flags
 =for apidoc_item sv_streq_flags
+=for apidoc_flag SV_SKIP_OVERLOAD
 
 These each return a boolean indicating if the strings in the two SV arguments
 are identical, coercing them to strings if necessary, basically behaving like
@@ -8626,8 +8617,6 @@ overloading, but setting the C<SV_SKIP_OVERLOAD> bit set in C<flags> causes it
 to use regular string comparison.
 
 Otherwise, the functions behave identically.
-
-=for apidoc Amnh||SV_SKIP_OVERLOAD
 
 =cut
 */
@@ -8715,6 +8704,7 @@ Perl_sv_streq_flags(pTHX_ SV *sv1, SV *sv2, const U32 flags)
 
 =for apidoc      sv_numeq
 =for apidoc_item sv_numeq_flags
+=for apidoc_flag SV_SKIP_OVERLOAD
 
 These each return a boolean indicating if the numbers in the two SV arguments
 are identical, coercing them to numbers if necessary, basically behaving like
@@ -8731,8 +8721,6 @@ C<sv_numeq_flags> normally does the same, but setting the C<SV_SKIP_OVERLOAD>
 bit set in C<flags> causes it to use regular numerical comparison.
 
 Otherwise, the functions behave identically.
-
-=for apidoc Amnh||SV_SKIP_OVERLOAD
 
 =cut
 */
@@ -10142,6 +10130,7 @@ Perl_sv_newmortal(pTHX)
 
 /*
 =for apidoc newSVpvn_flags
+=for apidoc_flag SVs_TEMP
 
 Creates a new SV and copies a string (which may contain C<NUL> (C<\0>)
 characters) into it.  The reference count for the
@@ -10157,8 +10146,6 @@ C<newSVpvn_utf8()> is a convenience wrapper for this function, defined as
 
     #define newSVpvn_utf8(s, len, u)			\
         newSVpvn_flags((s), (len), (u) ? SVf_UTF8 : 0)
-
-=for apidoc Amnh||SVs_TEMP
 
 =cut
 */
@@ -11471,6 +11458,7 @@ S_sv_unglob(pTHX_ SV *const sv, U32 flags)
 /*
 =for apidoc      sv_unref
 =for apidoc_item sv_unref_flags
+=for apidoc_flag SV_IMMEDIATE_UNREF
 
 These each unset the RV status of the SV, and decrement the reference count of
 whatever was being referenced by the RV.  This can almost be thought of
@@ -11488,8 +11476,6 @@ Other than the ability to force immediate action, the two forms behave
 identically.
 
 See C<L</SvROK_off>>.
-
-=for apidoc Amnh||SV_IMMEDIATE_UNREF
 
 =cut
 */

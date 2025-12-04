@@ -277,7 +277,10 @@ Perl_free_tmps(pTHX)
 }
 
 /*
-=for apidoc save_scalar_at
+=for apidoc      save_scalar_at
+=for apidoc_flag SAVEf_KEEPOLDELEM
+=for apidoc_flag SAVEf_SETMAGIC
+
 
 A helper function for localizing the SV referenced by C<*sptr>.
 
@@ -290,9 +293,6 @@ If there is such magic, and C<SAVEf_SETMAGIC> is set in in C<flags>, 'set'
 magic will be processed on the new scalar.  If unset, 'set' magic will be
 skipped.  The latter typically means that assignment will soon follow (I<e.g.>,
 S<C<'local $x = $y'>>), and that will handle the magic.
-
-=for apidoc Cmnh ||SAVEf_KEEPOLDELEM
-=for apidoc Cmnh ||SAVEf_SETMAGIC
 
 =cut
 */
