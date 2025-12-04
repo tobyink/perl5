@@ -195,7 +195,7 @@
 :   NULLOK  means the called function definitely can handle this parameter
 :	    being NULL.  The reason you need to specify this at all is to tell
 :	    future maintainers that you have considered the question about the
-:	    parameter, and this is the answer.
+:	    parameter, and you have determined that this is the answer.
 :   SPTR    means that not only must this pointer parameter be non-NULL, it
 :	    points to a position in a character string, which the called
 :	    function is not to look behind.  If a parameter is marked with this
@@ -226,14 +226,14 @@
 :   In each equation all three or any two of the constraints must be present.
 :
 :   When only two constraints are present and one of them is either EPTR or
-:   EPTRQ, the difference between the remaining SPTR or MPTR becomes somewhat
-:   fuzzy; the generated assertion will be the same whichever constraint is
-:   used.  You should choose the one that makes the most sense for the
-:   semantics of the parameter.  For example, there are currently some
-:   functions with parameters named 'curpos', and no SPTR parameter exists.
-:   The name of the parameter clearly indicates it isn't necessarily the
-:   starting position of the string, so using MPTR as the constraint makes the
-:   most sense.
+:   EPTRQ, the difference between your choosing to use SPTR or MPTR for the
+:   other one becomes somewhat fuzzy; the generated assertion will be the same
+:   whichever constraint is used.  You should choose the one that makes the
+:   most sense for the semantics of the parameter.  For example, there are
+:   currently some functions with parameters named 'curpos', and no SPTR
+:   parameter exists.  The name of the parameter clearly indicates it isn't
+:   necessarily the starting position of the string, so using MPTR as the
+:   constraint makes the most sense.
 :
 :   The parameters for the function can be in any order, except if a function
 :   has multiple different character strings, all the parameters for the first
