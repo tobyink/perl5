@@ -248,7 +248,7 @@ Perl_grok_bin_oct_hex(pTHX_ const char * const start,
                         NV *result,
                         const unsigned shift, /* 1 for binary; 3 for octal;
                                                  4 for hex */
-                        const U8 class_bit,
+                        const U8 lookup_bit,
                         const char prefix
                      )
 
@@ -313,46 +313,46 @@ Perl_grok_bin_oct_hex(pTHX_ const char * const start,
   redo_switch:
     switch (e - s) {
       default:
-        if (UNLIKELY(! generic_isCC_(*s, class_bit)))  break;
+        if (UNLIKELY(! generic_isCC_(*s, lookup_bit)))  break;
         goto loop;
 
       case 8:
-        if (UNLIKELY(! generic_isCC_(*s, class_bit)))  break;
+        if (UNLIKELY(! generic_isCC_(*s, lookup_bit)))  break;
         accumulated = XDIGIT_VALUE(*s);
         s++;
         /* FALLTHROUGH */
       case 7:
-        if (UNLIKELY(! generic_isCC_(*s, class_bit)))  break;
+        if (UNLIKELY(! generic_isCC_(*s, lookup_bit)))  break;
         accumulated = (accumulated << shift) | XDIGIT_VALUE(*s);
         s++;
         /* FALLTHROUGH */
       case 6:
-        if (UNLIKELY(! generic_isCC_(*s, class_bit)))  break;
+        if (UNLIKELY(! generic_isCC_(*s, lookup_bit)))  break;
         accumulated = (accumulated << shift) | XDIGIT_VALUE(*s);
         s++;
         /* FALLTHROUGH */
       case 5:
-        if (UNLIKELY(! generic_isCC_(*s, class_bit)))  break;
+        if (UNLIKELY(! generic_isCC_(*s, lookup_bit)))  break;
         accumulated = (accumulated << shift) | XDIGIT_VALUE(*s);
         s++;
         /* FALLTHROUGH */
       case 4:
-        if (UNLIKELY(! generic_isCC_(*s, class_bit)))  break;
+        if (UNLIKELY(! generic_isCC_(*s, lookup_bit)))  break;
         accumulated = (accumulated << shift) | XDIGIT_VALUE(*s);
         s++;
         /* FALLTHROUGH */
       case 3:
-        if (UNLIKELY(! generic_isCC_(*s, class_bit)))  break;
+        if (UNLIKELY(! generic_isCC_(*s, lookup_bit)))  break;
         accumulated = (accumulated << shift) | XDIGIT_VALUE(*s);
         s++;
         /* FALLTHROUGH */
       case 2:
-        if (UNLIKELY(! generic_isCC_(*s, class_bit)))  break;
+        if (UNLIKELY(! generic_isCC_(*s, lookup_bit)))  break;
         accumulated = (accumulated << shift) | XDIGIT_VALUE(*s);
         s++;
         /* FALLTHROUGH */
       case 1:
-        if (UNLIKELY(! generic_isCC_(*s, class_bit)))  break;
+        if (UNLIKELY(! generic_isCC_(*s, lookup_bit)))  break;
         accumulated = (accumulated << shift) | XDIGIT_VALUE(*s);
         s++;
         /* FALLTHROUGH */
@@ -371,7 +371,7 @@ Perl_grok_bin_oct_hex(pTHX_ const char * const start,
         goto done_parse;
     }
 
-    if (! underscore_valid(s, e, class_bit)) {
+    if (! underscore_valid(s, e, lookup_bit)) {
         goto done_parse;
     }
 
@@ -403,7 +403,7 @@ Perl_grok_bin_oct_hex(pTHX_ const char * const start,
 
     /* Loop through the characters */
     for (; s < e; s++) {
-        if (generic_isCC_(*s, class_bit)) {
+        if (generic_isCC_(*s, lookup_bit)) {
             /* Write it in this wonky order with a goto to attempt to get the
                compiler to make the common case integer-only loop pretty tight.
                With gcc seems to be much straighter code than old scan_hex.
@@ -444,7 +444,7 @@ Perl_grok_bin_oct_hex(pTHX_ const char * const start,
         /* Handle non-trailing underscores when those are accepted */
         if (   UNLIKELY(*s == '_')
             && allow_underscores
-            && underscore_valid(s, e, class_bit))
+            && underscore_valid(s, e, lookup_bit))
         {
             ++s;
 
