@@ -422,7 +422,7 @@ Perl_grok_bin_oct_hex(pTHX_ const char * const start,
     max_div = UV_MAX >> shift;
 
     /* Loop through the characters */
-    for (; s < e && isFOO_or_UNDERSCORE_(*s, lookup_bit); s++) {
+    while (s < e && isFOO_or_UNDERSCORE_(*s, lookup_bit)) {
 
         /* Handle non-trailing underscores when those are accepted */
         if (UNLIKELY(*s == '_')) {
@@ -449,6 +449,7 @@ Perl_grok_bin_oct_hex(pTHX_ const char * const start,
          * (it does have unnecessary shifts, ANDSs, and additions for those)
          * */
         accumulated = (accumulated << shift) | XDIGIT_VALUE(*s);
+        s++;
     }   /* End of parsing loop */
 
   done_parse:
