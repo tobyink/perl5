@@ -284,6 +284,8 @@
 #   undef CC_UNDERSCORE_
 #   undef isFOO_or_UNDERSCORE_
 #   if !defined(PERL_EXT)
+#     undef expected_size
+#     undef GV_CACHE_ONLY
 #     undef invlist_intersection_
 #     undef invlist_subtract_
 #     undef invlist_union_
