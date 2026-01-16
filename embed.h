@@ -281,15 +281,38 @@
 #   undef case_98_SBOX32
 #   undef case_99_SBOX32
 #   undef case_9_SBOX32
+#   undef CC_MAGICAL_
 #   undef CC_UNDERSCORE_
+#   undef COMBINING_GREEK_YPOGEGRAMMENI_UTF8
+#   undef do_aexec
 #   undef isFOO_or_UNDERSCORE_
+#   undef isIDCONT_lazy_if_safe
+#   undef new_XPV
+#   undef new_XPVIV
+#   undef SBOX32_CASE_
+#   undef SHY_NATIVE
+#   undef UNI_DISPLAY_TR_
 #   undef USE_STDIO
 #   if !defined(PERL_EXT)
 #     undef invlist_intersection_
 #     undef invlist_subtract_
 #     undef invlist_union_
+#     undef OPpPARAM_IF_FALSE
+#     undef OPpPARAM_IF_UNDEF
+#     undef OPpSELF_IN_PAD
+#     undef RXf_PMf_CHARSET_SHIFT_
+#     undef RXf_PMf_SHIFT_NEXT_
 #     undef utf16_to_utf8
 #     undef utf16_to_utf8_reversed
+#   endif /* !defined(PERL_EXT) */
+#   if !defined(PERL_EXT_RE_BUILD)
+#     undef FAIL_
+#     undef first_upper_bit_set_byte_number
+#     undef invlist_intersection_complement_2nd_
+#     undef invlist_union_complement_2nd_
+#     undef RExC_parse_advance
+#     undef RXf_PMf_SHIFT_COMPILETIME_
+#     undef WARN_HELPER_
 #   endif
 # endif /* !defined(PERL_CORE) */
 #else /* if !defined(PERL_DO_UNDEFS) */
