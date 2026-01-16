@@ -104,11 +104,17 @@ my @pod_list = qw(
                    pod/perlreapi.pod
                  );
 
-# This is a list of symbols that are not documented to be available for
-# modules to use, but are nevertheless currently not kept by embed.h from
-# being visible to the world.
+# This is a list of symbols that are
+#   1) not documented to be available for modules to use,
+#   2) not resolved as needed to be visible to any module and that we don't
+#      plan to document any time soon,
+#   3) but are nevertheless currently not kept by embed.h from being visible
+#      to the world.
 #
 # Strive to make this list empty.
+#
+# Symbols in class 2) above should instead be placed in
+# @undocumented_always_visible.
 #
 # The list does not include symbols that we have documented as being reserved
 # for perl's use, namely those that begin with 'PL_' or contain qr/perl/i.
@@ -3540,6 +3546,19 @@ my @needed_by_ext_re = qw(
 my @needed_by_ext = qw(
 );
 
+# This is a list of symbols that are needed to be visible everywhere and are
+# not documented, and we don't plan to document them any time soon.
+# Effectively these are symbols that would otherwise be in
+# @unresolved_visibility_overrides, but we have resolved them to here.
+#
+# Think twice about adding a symbol to this list.  Would it be better to
+# instead document the symbol?
+#
+# Typically these are symbols that are behind-the-scenes helpers whose use is
+# obvious from inspection of the things they help.
+my @undocumented_always_visible = qw(
+);
+
 my %unresolved_visibility_overrides;
 $unresolved_visibility_overrides{$_} = 1 for @unresolved_visibility_overrides;
 
@@ -3551,6 +3570,9 @@ $needed_by_ext_re{$_} = 1 for @needed_by_ext_re;
 
 my %needed_by_ext;
 $needed_by_ext{$_} = 1 for @needed_by_ext;
+
+my %undocumented_always_visible;
+$undocumented_always_visible{$_} = 1 for @undocumented_always_visible;
 
 # Keep lists of symbols to undef under various conditions.  We can initialize
 # the two ones for perl extensions with the lists above.
@@ -4777,7 +4799,8 @@ sub find_undefs {
                             %needed_by_ext,
                             %needed_by_ext_re,
                             %visibility,
-                            %unresolved_visibility_overrides
+                            %unresolved_visibility_overrides,
+                            %undocumented_always_visible,
                       )
     {
         delete $always_undefs{$entry};
